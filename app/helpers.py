@@ -64,3 +64,6 @@ def parse_tle(tle):
     }
     
     return transformed_tle
+
+def parse_mutliple_tles(tles):
+    return [parse_tle(tle) for tle in tles]
