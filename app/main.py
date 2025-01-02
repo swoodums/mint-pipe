@@ -1,10 +1,10 @@
 import datetime
+
 from enum import Enum
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from models import TwoLineElementRecord, TwoLineElementRecordParsed
-
-from helpers import parse_tle, parse_mutliple_tles
+from .models import TwoLineElementRecord, TwoLineElementRecordParsed
+from .helpers import parse_tle, parse_mutliple_tles
 
 app = FastAPI(      #create FastAPI instance
     title="Earth-Orbit Objects API",        # Provide a title
@@ -35,7 +35,7 @@ test_tle_from_class = TwoLineElementRecord(
 
 @app.get("/")       #Define a path operation decorator.  This tells FastAPI that the function below is in charge of handling requests that go to the path / using the get operation
 async def index():         #define the path operation function
-    return {"message": "Hello World!"}       #return the content
+    return {"message": "NASA TLE API"}       #return the content
 
 
 @app.get("/tle")

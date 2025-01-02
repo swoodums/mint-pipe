@@ -1,4 +1,4 @@
-from models import TwoLineElementRecord, TwoLineElementRecordParsed
+from .models import TwoLineElementRecord, TwoLineElementRecordParsed
 
 def parse_tle(tle: TwoLineElementRecord) -> TwoLineElementRecordParsed:
 

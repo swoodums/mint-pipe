@@ -3,3 +3,6 @@ uvicorn
 requests
 pytest
 httpx
+datetime
+enum
+pydantic
