@@ -1,8 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import List
 
 class TwoLineElementRecord(BaseModel):
-    id: str
-    type: str
+    id: str = Field(alias="@id")
+    type: str = Field(alias="@type")
     satelliteId: int
     name: str
     date: str
@@ -35,3 +36,21 @@ class TwoLineElementRecordParsed(BaseModel):
     mean_motion: float
     revolution_number: int
     line2_check_sum: int
+
+class SourcePayload(BaseModel):
+    context: str = Field(alias="@context")
+    id: str = Field(alias="@id")
+    type: str = Field(alias="@type")
+    totalItems: int
+    member: List[TwoLineElementRecord]
+    parameters: dict
+    view: dict
+
+class ModifiedPayload(BaseModel):
+    context: str
+    id: str
+    type: str
+    totalItems: int
+    member: List[TwoLineElementRecordParsed]
+    parameters: dict
+    view: dict
