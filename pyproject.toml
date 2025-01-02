@@ -1,2 +1,9 @@
+[project]
+name = "mint-pipe"
+version = "0.1.0"
+description = "A data engineering project"
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+
 [tool.pytest]
 pythonpath = "."
