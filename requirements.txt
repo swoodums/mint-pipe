@@ -4,5 +4,4 @@ requests
 pytest
 httpx
 datetime
-enum
 pydantic
