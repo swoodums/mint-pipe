@@ -1,58 +1,22 @@
-from .models import TwoLineElementRecord, TwoLineElementRecordParsed, SourcePayload, ModifiedPayload
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+from app.models import TwoLineElementRecord, TwoLineElementRecordParsed, SourcePayload, ModifiedPayload
 
-def create_robust_session():
-    session = requests.Session()
-    
-    # Configure retry strategy
-    retry_strategy = Retry(
-        total=3,  # number of retries
-        backoff_factor=1,  # wait 1, 2, 4 seconds between retries
-        status_forcelist=[500, 502, 503, 504],  # retry on these status codes
-        allowed_methods=["GET"]  # only retry on GET requests
-    )
-    
-    # Mount the adapter to the session
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    session.mount("https://", adapter)
-    session.mount("http://", adapter)
-    
-    return session
-
-def fetch_tle_data(url='https://tle.ivanstanojevic.me/api/tle/'):
-    headers = {
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Encoding": "gzip, deflate, br, zstd",
-        "Accept-Language": "en-US,en;q=0.5",
-        "Connection": "keep-alive",
-        "DNT": "1",
-        "Host": "tle.ivanstanojevic.me",
-        "Priority":	"u=0, i",
-        "Sec-Fetch-Dest": "document",
-        "Sec-Fetch-Mode": "navigate",
-        "Sec-Fetch-Site": "none",
-        "Sec-Fetch-User": "?1",
-        "Sec-GPC": "1",
-        "Upgrade-Insecure-Requests": "1",
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0"
-    }
-    
-    session = create_robust_session()
-    
-    try:
-        #Using session with stream=True
-        with session.get(url, headers=headers, stream=True) as response:
-            print(f"Status Code: {response.status_code}")
-            print(f"Response Headers: {dict(response.headers)}")
-            return response.json()
-    
-    except requests.exceptions.RequestException as e:
-        print(f"Request failed. Error: {str(e)}")
-        raise SystemExit(e)
-
+# This function takes a single TLE record and parses the line elements into distinct key-value pairs
+# Definitions for 
 def parse_tle(tle: TwoLineElementRecord) -> TwoLineElementRecordParsed:
+    """Parses a single Two-Line Element record
+
+    Takes each record from the member list and parses line1 and line2 into
+    distinct key-value pairs.
+
+    Args:
+        tle: object created from class TwoLineElementRecord
+
+    Returns:
+        An object with the lines parsed created from class TwoLineElementRecordParsed
+        Returned as a Pydantic model.
+
+    Reference: https://ensatellite.com/tle/
+    """
 
     #Extract second derivative mean motion
     sdmm_raw = tle.line1[44:52]
@@ -93,6 +57,19 @@ def parse_tle(tle: TwoLineElementRecord) -> TwoLineElementRecordParsed:
     )
 
 def modify_payload(source_payload: SourcePayload) -> ModifiedPayload:
+    """Modifies a TLE payload
+
+    Uses the same structure as the response payload, but has the TLE records
+    parsed into distinct key-value pairs.
+
+    Args:
+        source_payload: object created from class SourcePayload
+
+    Returns:
+        An response payload with the TLE records parsed into key-value pairs
+        Returned as a Pydantic model.
+    """
+
     modified_members = [parse_tle(member) for member in source_payload.member]
 
     # Create the modified payload
