@@ -1,8 +1,7 @@
 fastapi
 uvicorn
-requests
 pytest
+json
 httpx
-datetime
 pydantic
 typing

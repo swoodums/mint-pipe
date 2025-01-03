@@ -2,6 +2,13 @@ from pydantic import BaseModel, Field
 from typing import List
 
 class TwoLineElementRecord(BaseModel):
+    """
+    A single Two-Line Element record
+    
+    Contains information from a single record from the member list
+    Notably, the encoded information in line1 and line2
+    Reference https://ensatellite.com/tle/ for details.
+    """
     id: str = Field(alias="@id")
     type: str = Field(alias="@type")
     satelliteId: int
@@ -10,13 +17,33 @@ class TwoLineElementRecord(BaseModel):
     line1: str
     line2: str
 
+# Creates a class that holds the payload from the source.
+class SourcePayload(BaseModel):
+    """
+    The response payload from the source API.
+    """
+    context: str = Field(alias="@context")
+    id: str = Field(alias="@id")
+    type: str = Field(alias="@type")
+    totalItems: int
+    member: List[TwoLineElementRecord]
+    parameters: dict
+    view: dict
+
+# Creates a class that holds the transformed TLE
 class TwoLineElementRecordParsed(BaseModel):
+    """
+    A single parsed Two-Line Element record
+    
+    Contains information from a single record from the member list that has been
+    parsed.  The Two-Line Element has been decoded and represented as key-value
+    pairs. Reference https://ensatellite.com/tle/ for details.
+    """
     id: str
     type: str
     satelliteId: int
     name: str
     date: str
-    line_number: int
     satellite_catalog_number: int
     classification: str
     international_designator: str
@@ -37,16 +64,11 @@ class TwoLineElementRecordParsed(BaseModel):
     revolution_number: int
     line2_check_sum: int
 
-class SourcePayload(BaseModel):
-    context: str = Field(alias="@context")
-    id: str = Field(alias="@id")
-    type: str = Field(alias="@type")
-    totalItems: int
-    member: List[TwoLineElementRecord]
-    parameters: dict
-    view: dict
-
+# Creates a class that holds the payload after the TLE records have been parsed.
 class ModifiedPayload(BaseModel):
+    """
+    The modified response payload from the source API.
+    """
     context: str
     id: str
     type: str

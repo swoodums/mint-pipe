@@ -66,7 +66,9 @@ I will be using FastAPI to build some endpoints that consume data, transform it,
 
 The data is coming from a public API found on https://api.nasa.gov/.  The actual API is https://tle.ivan.stanojevic.me/api/.  It is data for earth-orbiting objects at a given point in time.  It provides two-line element set records, updated daily from  CelesTrak and served as a JSON.  A two-line element is a data format encoding a lsit of orbital elements of an earth-orbiting object for a given point in time.
 
-We will be extracting the data for each element and flattening the data, so we have one row per object, with the data types defined.  This ensures we have a predicatable schema, and the API will perform data validation.
+We will be extracting the data for each element.  We define all the class objects from pydantic models, including the source API response, each TLE record, and this API's response. The API's requests and responses should function the same as the source API. We will use pytest to test the code, and orchestrate it in a GitHub Actions workflow.
+
+This is the first part of a larger project.  See <a href="#roadmap">Roadmap</a>.  Right now, I'm deep into the API.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -84,29 +86,34 @@ We will be extracting the data for each element and flattening the data, so we h
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.  Lorem ipsum since we're still in development.
+Create a virtual environment.
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# or
+venv\Scripts\activate   # Windows
+```
+To get a local copy up and running follow these steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.  Lorem ipsum since we're still in development.
+Use `pip` to install the following:
+* fastapi
+```bash
+pip install fastapi
+```
+
 
 ### Installation
 
 All lorem ipsum since we're still in development
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
+1. Clone the repo
+   ```bash
    git clone https://github.com/swoodums/mint-pipe.git
    ```
-3. Install required packages
-4. Run uvicorn server
-5. Change git remote url to avoid accidental pushes to base project
-   ```sh
-   git remote set-url origin swoodums/mint-pipe
-   git remote -v # confirm the changes
-   ```
+2. Install required packages
+3. Run uvicorn server
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -128,12 +135,14 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 - [ ] Develop API around existing endpoint
     - [x] Build logic for parsing TLE to a flattened JSON
-    - [ ] Build out calling to existing API
-    - [ ] Build out new API endpoint with transformed data
-- [ ] Build out FastAPI server. 
+    - [x] Build out calling to existing API
+    - [x] Build out new API endpoint with transformed data
+- [ ] Build out FastAPI server.
+    - [ ] Create Query Parameters
     - Being able to create an API interface between some data source producer and some consumer is a skill to learn for data engineering.  While we could simply unwind and load the JSON, we could also build an API that processes the two-line element data into a JSON format, and does some validation.  This should allow us to load the data more easily using Airbyte, as well.
-- [x] Orchestrate CI in GitHub Actions
-- [ ] Orchestrate CD in GitHub Actions'
+- [ ] Write Tests for app
+- [ ] Orchestrate CI in GitHub Actions
+- [ ] Orchestrate CD in GitHub Actions
     - Need to have something to deploy, and set up deployment.
 - [ ] Deploy Airbyte into a Linux environment
     - May require setting up kubernetes or dummying it locally.  This feels like it might be wildly out of scope... more to come.
