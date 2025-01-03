@@ -2,6 +2,7 @@ import json
 from httpx import AsyncClient, RequestError
 
 from fastapi import FastAPI, HTTPException
+from urllib.parse import urlencode
 
 from app.models import SourcePayload, ModifiedPayload
 from app.helpers import modify_payload
@@ -17,15 +18,34 @@ client = AsyncClient()
 async def root():
     return {"message": "Hello World!"}
 
+# search: str | None = "*", sort: str | None = "popularity", sort-dir: str | None = "desc", page: int | None = 1, page-size: int | None = 20
+
 @app.get("/tle")
-async def get_collection() -> ModifiedPayload:
+async def get_collection(
+    search: str | None = "*",
+    sort: str | None = "popularity",
+    sort_dir: str | None = "desc",
+    page: int | None = 1,
+    page_size: int | None = 20
+) -> ModifiedPayload:
+    
     base_url = 'https://tle.ivanstanojevic.me/api'
+    function_parameters = {
+        'search': search,
+        'sort': sort,
+        'sort-dir': sort_dir,
+        'page': page,
+        'page_size': page_size
+    }
+    query_parameters = urlencode({k: v for k, v in function_parameters.items() if v is not None})
     request_headers = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0"
     }
     path = '/tle/'
     try:
-        response = await client.get(url = f"{base_url}{path}", headers = request_headers)
+        response = await client.get(
+            url = f"{base_url}{path}?{query_parameters}",
+            headers = request_headers)
         response.raise_for_status()
         response_content = response.content # This returns a byte array containing the json.
         response_content_string = response_content.decode("utf-8") # This returns a string.

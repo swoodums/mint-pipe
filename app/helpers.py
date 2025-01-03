@@ -34,7 +34,6 @@ def parse_tle(tle: TwoLineElementRecord) -> TwoLineElementRecordParsed:
         satelliteId = tle.satelliteId,
         name = tle.name,
         date = tle.date,
-        line_number = tle.line1[0], 
         satellite_catalog_number = tle.line1[2:7],
         classification = tle.line1[7],
         international_designator = tle.line1[9:15],
