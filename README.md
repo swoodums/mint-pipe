@@ -133,14 +133,14 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Develop API around existing endpoint
+- [x] Develop API around existing endpoint
     - [x] Build logic for parsing TLE to a flattened JSON
     - [x] Build out calling to existing API
     - [x] Build out new API endpoint with transformed data
 - [ ] Build out FastAPI server.
-    - [ ] Create Query Parameters
+    - [x] Create Query Parameters
     - Being able to create an API interface between some data source producer and some consumer is a skill to learn for data engineering.  While we could simply unwind and load the JSON, we could also build an API that processes the two-line element data into a JSON format, and does some validation.  This should allow us to load the data more easily using Airbyte, as well.
-- [ ] Write Tests for app
+- [ ] Write Tests for API app
 - [ ] Orchestrate CI in GitHub Actions
 - [ ] Orchestrate CD in GitHub Actions
     - Need to have something to deploy, and set up deployment.
@@ -155,8 +155,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [ ] Orchestrate everything in Dagster. 
 - [ ] Connect to your duckdb data model from some other client using dbeaver.
 
-<!-- See the [open issues](https://github.com/swoodums/mint-pipe/issues) for a full list of proposed features (and known issues).
-Save this for when you actually have features built out in GitHub, if you do. -->
+See the [open issues](https://github.com/swoodums/mint-pipe/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
