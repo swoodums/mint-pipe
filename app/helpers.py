@@ -1,4 +1,5 @@
-from app.models import TwoLineElementRecord, TwoLineElementRecordParsed, SourcePayload, ModifiedPayload
+from app.models import TwoLineElementRecord, TwoLineElementRecordParsed, SourcePayload, ModifiedPayload, QueryParams
+from urllib.parse import urlencode
 
 # This function takes a single TLE record and parses the line elements into distinct key-value pairs
 # Definitions for 
@@ -34,7 +35,6 @@ def parse_tle(tle: TwoLineElementRecord) -> TwoLineElementRecordParsed:
         satelliteId = tle.satelliteId,
         name = tle.name,
         date = tle.date,
-        line_number = tle.line1[0], 
         satellite_catalog_number = tle.line1[2:7],
         classification = tle.line1[7],
         international_designator = tle.line1[9:15],
@@ -82,3 +82,36 @@ def modify_payload(source_payload: SourcePayload) -> ModifiedPayload:
         parameters=source_payload.parameters,
         view=source_payload.view
     )
+
+def parse_query_params_to_str(params: QueryParams) -> str:
+    """Convert a Pydantic model for Query Parameters into a string usable by a source API.
+
+    Keeps the validating and documentation benefits in FastAPI from defining a
+    Pydantic Model, and parses the model to a string that can be used in the URL
+    for the source API.
+
+    Args:
+        params: object created from class FilterParams
+
+    Returns:
+        A string suitable for passing to the source API for query parameters.
+    """
+    # Convert the Pydantic model to a dictionary
+    params_dict = params.model_dump()
+    
+    # Dictionary of parameter name mappings.  This gives us the correct string for passing to the external API.
+    param_name_mapping = {
+        'page_size': 'page-size',
+        'sort_dir': 'sort-dir'
+    }
+    
+    # Remove None values and convert to string representation
+    filtered_params = {}
+    for key, value in params_dict.items():
+        if value is not None:
+            # Use mapped parameter name if it exists, otherwise use original key
+            param_key = param_name_mapping.get(key, key)
+            filtered_params[param_key] = str(value)
+    
+    # Use urlencode to properly escape values
+    return urlencode(filtered_params)

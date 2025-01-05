@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Literal, Annotated
+from fastapi import Query
+from enum import Enum
 
 class TwoLineElementRecord(BaseModel):
     """
@@ -76,3 +78,26 @@ class ModifiedPayload(BaseModel):
     member: List[TwoLineElementRecordParsed]
     parameters: dict
     view: dict
+
+class SortEnum(str, Enum):
+    id = 'id'
+    name = 'name'
+    popularity = 'popularity'
+    inclination = 'inclination'
+    eccentricity = 'eccentricity'
+    period = 'period'
+
+class SortDirEnum(str, Enum):
+    asc = 'asc'
+    desc = 'desc'
+
+class QueryParams(BaseModel):
+    """
+    The query parameters for the tle api.
+    """
+    search: str | None = None
+    sort: Literal["id", "name", "popularity", "inclination", "eccentricity", "period"] = None
+    sort_dir: Literal["asc", "desc"] = None
+    page: int = Field(ge=1)
+    page: Annotated[int | None, Query(ge=1)] = None
+    page_size: Annotated[int | None, Query(ge=1, lt=100)] = None
