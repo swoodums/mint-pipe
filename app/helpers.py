@@ -1,4 +1,7 @@
 from app.models import TwoLineElementRecord, TwoLineElementRecordParsed, SourcePayload, ModifiedPayload, QueryParams
+from httpx import AsyncClient, RequestError
+import json
+from fastapi import HTTPException
 from urllib.parse import urlencode
 
 # This function takes a single TLE record and parses the line elements into distinct key-value pairs
@@ -106,12 +109,31 @@ def parse_query_params_to_str(params: QueryParams) -> str:
     }
     
     # Remove None values and convert to string representation
-    filtered_params = {}
+    query_params = {}
     for key, value in params_dict.items():
         if value is not None:
             # Use mapped parameter name if it exists, otherwise use original key
             param_key = param_name_mapping.get(key, key)
-            filtered_params[param_key] = str(value)
+            query_params[param_key] = str(value)
     
     # Use urlencode to properly escape values
-    return urlencode(filtered_params)
+    return urlencode(query_params)
+
+async def make_source_api_call(url: str):
+    client = AsyncClient()
+    request_headers = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0"
+    }
+    try:
+        response = await client.get(
+            url = f"{url}",
+            headers = request_headers)
+        response.raise_for_status()
+        response_content = response.content # This returns a byte array containing the json.
+        response_content_string = response_content.decode("utf-8") # This returns a string.
+        response_content_dict = json.loads(response_content_string) # This converts the json-as-string and returns a dict.
+        return response_content_dict
+    except RequestError as e:
+        raise HTTPException(status_code=503, detail=f"External API error: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
