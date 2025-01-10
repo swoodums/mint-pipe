@@ -120,6 +120,17 @@ def parse_query_params_to_str(params: QueryParams) -> str:
     return urlencode(query_params)
 
 async def make_source_api_call(url: str):
+    """Makes a get call to the source API.
+
+    Really only needs the URL for the call.  Headers are expected to be the same
+    for every call for this application.
+
+    Args:
+        url: The string to pass as the URL to the API
+
+    Returns:
+        A JSON represented as a python dictionary
+    """ 
     client = AsyncClient()
     request_headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:133.0) Gecko/20100101 Firefox/133.0"

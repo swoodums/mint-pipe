@@ -5,17 +5,24 @@ from urllib.parse import urljoin
 from app.models import SourcePayload, ModifiedPayload, TwoLineElementRecord, TwoLineElementRecordParsed, QueryParams
 from app.helpers import parse_tle, modify_payload, make_source_api_call, parse_query_params_to_str
 
-app = FastAPI(
-    title="Earth-Orbit Objects API",        # Provide a title
-    description="API for transforming earth-orbit objects TLE data to JSON",        #Provide a description
-    version="0.3.0",
+tags_metadata = [
+    {
+        "name": "TLE",
+        "description": "Operations for TLE records",
+    }
+]
 
+app = FastAPI(
+    title="Earth-Orbit Objects API",
+    description="API for transforming earth-orbit objects TLE data to JSON",
+    version="0.3.0",
+    openapi_tags=tags_metadata
 )
 
 base_url = 'https://tle.ivanstanojevic.me/'
 path = 'api/tle/'
 
-@app.get("/tle")
+@app.get("/tle", tags = ["TLE"])
 async def get_collection(query_params: Annotated[QueryParams, Query()]) -> ModifiedPayload:
     
     parsed_query_params= parse_query_params_to_str(query_params)
@@ -28,7 +35,7 @@ async def get_collection(query_params: Annotated[QueryParams, Query()]) -> Modif
     modified_payload = modify_payload(source_payload)
     return(modified_payload)
     
-@app.get("/tle/{id}")
+@app.get("/tle/{id}", tags = ["TLE"])
 async def get_tle_record(id: int) -> TwoLineElementRecordParsed:
 
     url = f"{urljoin(base_url, path)}{id}"

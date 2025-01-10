@@ -3,5 +3,3 @@ __pycache__/
 *.__pycache__
 .pytest_cache/
 .coverage
-stoo.py
-twoo.py
